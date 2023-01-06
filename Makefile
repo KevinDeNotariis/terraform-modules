@@ -1,6 +1,6 @@
 MODULE ?= examples/complete
 TERRAFORM_VERSION ?= 1.3.6
-TERRAFORM_STATE_KEY ?= examples/complete
+TERRAFORM_STATE_KEY ?= terraform-modules/examples/complete/tfstate.json
 SSM_PARAMETER_TERRAFORM_S3_BUCKET ?= /terraform/statefiles/bucket
 AWS_REGION ?= eu-west-1
 
@@ -15,7 +15,6 @@ terraform-apply: terraform-init terraform/apply
 # --------------------------------------------------------------------
 install/terraform:
 	@echo "Installing terraform..."
-	@apt install unzip -y
 	@wget https://releases.hashicorp.com/terraform/$(TERRAFORM_VERSION)/terraform_$(TERRAFORM_VERSION)_linux_arm64.zip
 	@unzip terraform_$(TERRAFORM_VERSION)_linux_amd64.zip
 	@mv terraform /usr/local/bin/

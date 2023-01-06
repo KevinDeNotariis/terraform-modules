@@ -2,7 +2,6 @@ locals {
   identifier = "${var.identifier}-${var.environment}"
 
   subnets_cidr_blocks = cidrsubnets(
-    # var.ipam_pool_id == null ? aws_vpc.this.cidr_block : data.aws_vpc_ipam_preview_next_cidr.current[0].cidr,
     aws_vpc.this.cidr_block,
     var.private_subnets_new_bits,
     var.private_subnets_new_bits,

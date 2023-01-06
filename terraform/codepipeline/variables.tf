@@ -36,6 +36,12 @@ variable "build_image_type" {
   default     = "BUILD_GENERAL1_SMALL"
 }
 
+variable "build_image" {
+  description = "The image that should be used for the CodeBuild container"
+  type        = string
+  default     = "aws/codebuild/standard:5.0"
+}
+
 variable "build_timeout" {
   description = "The timeout for the build phase in minutes"
   type        = number

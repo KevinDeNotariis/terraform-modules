@@ -287,7 +287,7 @@ resource "aws_codebuild_project" "this" {
 
   environment {
     compute_type                = var.build_image_type
-    image                       = "aws/codebuild/standard:5.0"
+    image                       = var.build_image
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = false
     type                        = "LINUX_CONTAINER"
