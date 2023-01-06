@@ -6,7 +6,7 @@ It contains the following modules:
 
 ## Autoscaling
 
-Deploys and autoscaling group and the launch template, configured to allow SSM into the instances, inside the given subnets. We allow all outbound to VPC, the outbound on port 443 to anything (for SSM to work) and we also allow inbound port 80 (as the associated load balancer will terminate TLS and forward the request using that port). The autoscaling will be placed behind the Load Balancer passed as input.
+Deploys an autoscaling group and the launch template, configured to allow SSM into the instances, inside the given subnets. We allow all outbound to VPC, the outbound on port 443 to anything (for SSM to work) and we also allow inbound port 80 (as the associated load balancer will terminate TLS and forward the request using that port). The autoscaling will be placed behind the Load Balancer passed as input.
 
 ## Codepipeline
 
