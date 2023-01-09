@@ -97,7 +97,7 @@ resource "aws_eip" "nat_gateway" {
 
 resource "aws_nat_gateway" "this" {
   connectivity_type = "public"
-  subnet_id         = local.az_public_subnets_map[local.availability_zones[0]]
+  subnet_id         = aws_subnet.public[local.availability_zones[0]].id
   allocation_id     = aws_eip.nat_gateway.id
 
   tags = merge(local.tags, {
