@@ -38,3 +38,9 @@ variable "lb_cname_ttl" {
   type        = number
 }
 
+variable "lb_target_type" {
+  description = "The target type for the load balancer target group"
+  type        = string
+  default     = "instance"
+}
+

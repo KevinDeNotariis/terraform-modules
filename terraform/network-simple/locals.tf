@@ -52,7 +52,7 @@ locals {
   }
 
   tags = {
-    "module:name"  = "network"
+    "module:name"  = "network-simple"
     "module:owner" = "kevin de notariis"
     "module:repo"  = "github.com/KevinDeNotariis/terraform-modules"
   }

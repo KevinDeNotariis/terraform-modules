@@ -1,6 +1,7 @@
-MODULE ?= examples/complete
+EXAMPLE_NAME ?= complete
+MODULE := examples/$(EXAMPLE_NAME)
 TERRAFORM_VERSION ?= 1.3.6
-TERRAFORM_STATE_KEY ?= terraform-modules/examples/complete/tfstate.json
+TERRAFORM_STATE_KEY ?= terraform-modules/examples/$(EXAMPLE_NAME)/tfstate.json
 SSM_PARAMETER_TERRAFORM_S3_BUCKET ?= /terraform/statefiles/bucket
 AWS_REGION ?= eu-west-1
 
@@ -9,6 +10,11 @@ install-dependencies: install/terraform install/tfscan
 terraform-init: terraform/clean terraform/init
 terraform-plan: terraform-init terraform/plan
 terraform-apply: terraform-init terraform/apply
+
+echo/variables:
+	@echo "EXAMPLE_NAME=$(EXAMPLE_NAME)"
+	@echo "MODULE=$(MODULE)"
+	@echo "TERRAFORM_STATE_KEY=$(TERRAFORM_STATE_KEY)"
 
 # --------------------------------------------------------------------
 # Dependencies installation

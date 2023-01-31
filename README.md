@@ -29,6 +29,19 @@ This will contain the user data for the ec2 instances in the autoscaling group. 
 - CodeDeploy Agent
 - MongoShell
 
+## Autoscaling ECS
+
+This module provides the Application Autoscaling for the ECS cluster. It will create 2 scaling policies:
+
+- CPU usage
+- Memory usage
+
+## ECS
+
+Creates an ECR repository where the ECS cluster will take the image from.
+
+Creates the ECS cluster to be run as a FARGATE, service and task definition (in the future, the task should be passed as a variable)
+
 ## Loadbalancer
 
 Deploys a Load Balancer, creating an health check target at `/status/health`, creating a CNAME and an ACM certificate to associate for TLS encryption.
@@ -36,6 +49,10 @@ Deploys a Load Balancer, creating an health check target at `/status/health`, cr
 ## Network
 
 Deploys a VPC using either the specified Cidr block of using an AWS IPAM. It creates 3 public subnets and 3 private subnets. Internet gateway for public subnets, NAT gateway for private subnets. It is also possible to let the module create a private hosted zone associated with the VPC.
+
+## Network Simple
+
+Same as Network but it does deploy only a single NAT Gateway
 
 # Run terraform commands on examples
 
@@ -46,6 +63,7 @@ Deploys a VPC using either the specified Cidr block of using an AWS IPAM. It cre
 1. The `Makefile` aims to contain userful targets to allow for an easy and fast deployment of the terraform code. In particular, the parameters that can be changed are:
 
    ```
+   EXAMPLE_NAME
    MODULE
    TERRAFORM_STATE_KEY
    SSM_PARAMETER_TERRAFORM_S3_BUCKET
@@ -87,4 +105,18 @@ Finally:
 
 ```sh
 make terraform/apply
+```
+
+### Deploy specific example folder
+
+```
+EXAMPLE_NAME=complete-ecs make terraform/init
+```
+
+```
+EXAMPLE_NAME=complete-ecs make terraform/plan
+```
+
+```
+EXAMPLE_NAME=complete-ecs make terraform/apply
 ```

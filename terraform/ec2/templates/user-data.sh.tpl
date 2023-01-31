@@ -39,7 +39,7 @@ function install-mongodb-shell() {
 }
 
 function install-nginx() {
-  amazon-linux-extras install nginx1
+  amazon-linux-extras install -y nginx1
 }
 
 function install-dependencies() {
