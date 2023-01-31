@@ -46,3 +46,8 @@ variable "scaling_cpu_trigger" {
   type        = number
   default     = 70
 }
+
+variable "scaling_sns_arn" {
+  description = "The SNS arn where the autoscaling events will be published to"
+  type        = string
+}

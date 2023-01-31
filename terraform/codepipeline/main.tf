@@ -335,6 +335,18 @@ resource "aws_codedeploy_deployment_group" "this" {
     }
   }
 
+  trigger_configuration {
+    trigger_events = [
+      "DeploymentStart",
+      "DeploymentSuccess",
+      "DeploymentFailure",
+      "DeploymentStop",
+      "DeploymentRollback"
+    ]
+    trigger_name       = "deployment-events"
+    trigger_target_arn = var.deploy_trigger_target_arn
+  }
+
   tags = local.tags
 }
 
@@ -428,4 +440,44 @@ resource "aws_codepipeline" "this" {
   }
 
   tags = local.tags
+}
+
+# ---------------------------------------------------------------
+# 11. Create CodeStar Notification Rule for CodePipeline Events
+# ---------------------------------------------------------------
+resource "aws_codestarnotifications_notification_rule" "this" {
+  name        = "${local.identifier}-${var.suffix}"
+  detail_type = "FULL"
+  event_type_ids = [
+    "codepipeline-pipeline-pipeline-execution-failed",
+    "codepipeline-pipeline-pipeline-execution-canceled",
+    "codepipeline-pipeline-pipeline-execution-started",
+    "codepipeline-pipeline-pipeline-execution-resumed",
+    "codepipeline-pipeline-pipeline-execution-succeeded",
+    "codepipeline-pipeline-pipeline-execution-superseded"
+  ]
+  resource = aws_codepipeline.this.arn
+
+  target {
+    type    = "SNS"
+    address = var.pipeline_notification_target_arn
+  }
+
+  tags = local.tags
+}
+
+data "aws_iam_policy_document" "sns_codepipeline" {
+  statement {
+    actions   = ["sns:Publish"]
+    resources = [var.pipeline_notification_target_arn]
+    principals {
+      type        = "Service"
+      identifiers = ["codestar-notifications.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_sns_topic_policy" "codepipeline" {
+  arn    = var.pipeline_notification_target_arn
+  policy = data.aws_iam_policy_document.sns_codepipeline.json
 }

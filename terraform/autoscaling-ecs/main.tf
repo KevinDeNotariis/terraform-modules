@@ -40,3 +40,41 @@ resource "aws_appautoscaling_policy" "cpu" {
     target_value = var.scaling_cpu_trigger
   }
 }
+
+# ---------------------------------------------------------------
+# 3. Create an Event Rule for Scaling Activities
+# ---------------------------------------------------------------
+resource "aws_cloudwatch_event_rule" "this" {
+  name        = "${local.identifier}-app-autoscaling-${var.suffix}"
+  description = "Catch Application Autoscaling Events"
+  event_pattern = jsonencode({
+    source      = ["aws.application-autoscaling"]
+    detail-type = ["Application Auto Scaling Scaling Activity State Change"]
+  })
+
+  tags = local.tags
+}
+
+# ---------------------------------------------------------------
+# 4. Set SNS as the Target of the Autoscaling events
+# ---------------------------------------------------------------
+resource "aws_cloudwatch_event_target" "this" {
+  rule = aws_cloudwatch_event_rule.this.name
+  arn  = var.scaling_sns_arn
+}
+
+data "aws_iam_policy_document" "sns" {
+  statement {
+    actions   = ["sns:Publish"]
+    resources = [var.scaling_sns_arn]
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_sns_topic_policy" "this" {
+  arn    = var.scaling_sns_arn
+  policy = data.aws_iam_policy_document.sns.json
+}

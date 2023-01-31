@@ -74,3 +74,13 @@ variable "deploy_lb_target_group_name" {
   description = "The load balancer in front of the autoscaling group"
   type        = string
 }
+
+variable "deploy_trigger_target_arn" {
+  description = "The Arn of the target SNS where to send information regarding the deployment progress"
+  type        = string
+}
+
+variable "pipeline_notification_target_arn" {
+  description = "The SNS notification arn where the pipeline stages will be sent to"
+  type        = string
+}

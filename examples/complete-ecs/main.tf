@@ -3,11 +3,26 @@ locals {
   environment = "test"
   suffix      = random_id.this.hex
 
-  root_domain_name = "mydomain.com"
+  root_domain_name = "myrootdomain.com"
 }
 
 resource "random_id" "this" {
   byte_length = 4
+}
+
+module "sns" {
+  source = "../../terraform/sns"
+
+  identifier  = local.identifier
+  environment = local.environment
+  suffix      = local.suffix
+
+  sns_general_subscriptions = [
+    {
+      protocol = "email"
+      endpoint = "my-email@gmail.com"
+    }
+  ]
 }
 
 module "network" {
@@ -65,4 +80,5 @@ module "autoscaling_ecs" {
   max_capacity     = 3
   ecs_cluster_name = module.ecs.ecs_cluster_name
   ecs_service_name = module.ecs.ecs_service_name
+  scaling_sns_arn  = module.sns.sns_general_arn
 }

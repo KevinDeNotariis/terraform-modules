@@ -12,7 +12,7 @@ resource "random_id" "this" {
 }
 
 module "network" {
-  source = "../../terraform/network"
+  source = "../../terraform/network-simple"
 
   identifier  = local.identifier
   environment = local.environment

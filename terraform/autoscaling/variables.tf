@@ -77,3 +77,8 @@ variable "db_creds_secret_id" {
   description = "The id of the secret in secrets manager holding the DB credentials; This is used to give the ec2 instances the permissions to access this secret"
   type        = string
 }
+
+variable "asg_sns_arn" {
+  description = "The SNS arn where the autoscaling group events will be published to"
+  type        = string
+}
