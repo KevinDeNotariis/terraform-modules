@@ -6,8 +6,4 @@ resource "null_resource" "build_and_push_ecr_image" {
   depends_on = [
     module.ecs
   ]
-
-  triggers = {
-    time = timestamp()
-  }
 }

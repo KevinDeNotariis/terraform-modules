@@ -62,19 +62,3 @@ resource "aws_cloudwatch_event_target" "this" {
   rule = aws_cloudwatch_event_rule.this.name
   arn  = var.scaling_sns_arn
 }
-
-data "aws_iam_policy_document" "sns" {
-  statement {
-    actions   = ["sns:Publish"]
-    resources = [var.scaling_sns_arn]
-    principals {
-      type        = "Service"
-      identifiers = ["events.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_sns_topic_policy" "this" {
-  arn    = var.scaling_sns_arn
-  policy = data.aws_iam_policy_document.sns.json
-}

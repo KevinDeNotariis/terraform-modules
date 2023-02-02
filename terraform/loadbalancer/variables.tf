@@ -44,3 +44,14 @@ variable "lb_target_type" {
   default     = "instance"
 }
 
+variable "enable_green_lb_target_group" {
+  description = "Whether to create a second target group for blue/green deployment. Specifically for ECS with CodeDeploy"
+  type        = bool
+  default     = false
+}
+
+variable "lb_ignore_listeners_changes" {
+  description = "Whether terraform should ignore changes in the lister's target groups, i.e. for an ECS blue/green deployment"
+  type        = bool
+  default     = false
+}

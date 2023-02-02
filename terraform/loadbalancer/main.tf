@@ -79,6 +79,31 @@ resource "aws_lb_target_group" "this" {
   tags = local.tags
 }
 
+resource "aws_lb_target_group" "green" {
+  count       = var.enable_green_lb_target_group ? 1 : 0
+  name        = "${local.identifier}-green-${var.suffix}"
+  vpc_id      = var.vpc_id
+  port        = 80
+  protocol    = "HTTP"
+  target_type = var.lb_target_type
+
+  health_check {
+    protocol            = "HTTP"
+    port                = 80
+    path                = "/status/health"
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+    interval            = 10 # Seconds
+    matcher             = "200-299"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = local.tags
+}
+
 # ---------------------------------------------------------------
 # 4. Request TLS certificate
 # ---------------------------------------------------------------
@@ -128,6 +153,8 @@ resource "aws_route53_record" "cert_validation" {
 # 7. Define the Listeners
 # ---------------------------------------------------------------
 resource "aws_lb_listener" "https" {
+  count = var.lb_ignore_listeners_changes ? 0 : 1
+
   load_balancer_arn = aws_lb.this.arn
   port              = 443
 
@@ -137,6 +164,29 @@ resource "aws_lb_listener" "https" {
   default_action {
     target_group_arn = aws_lb_target_group.this.arn
     type             = "forward"
+  }
+
+  tags = local.tags
+}
+
+resource "aws_lb_listener" "https_with_ignore_changes" {
+  count = var.lb_ignore_listeners_changes ? 1 : 0
+
+  load_balancer_arn = aws_lb.this.arn
+  port              = 443
+
+  protocol        = "HTTPS"
+  certificate_arn = aws_acm_certificate_validation.this.certificate_arn
+
+  default_action {
+    target_group_arn = aws_lb_target_group.this.arn
+    type             = "forward"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      default_action[0].target_group_arn
+    ]
   }
 
   tags = local.tags

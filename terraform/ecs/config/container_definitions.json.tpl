@@ -7,7 +7,7 @@
       "options": {
         "awslogs-region": "${region}",
         "awslogs-group": "${log_group}",
-        "awslogs-stream-prefix": "ecs"
+        "awslogs-stream-prefix": "${stream_prefix}"
       }
     },
     "portMappings": [{

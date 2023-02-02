@@ -80,8 +80,9 @@ module "codepipeline" {
   source_repo_id     = "mygithub/myrepo"
   source_branch_name = "main"
 
-  deploy_ag_id                = module.autoscaling.ag_id
-  deploy_ag_ec2_iam_role_name = module.autoscaling.ag_ec2_iam_role_name
-
-  deploy_lb_target_group_name = module.loadbalancer.lb_target_group_name
+  deploy_server_config = {
+    ag_id                = module.autoscaling.ag_id
+    ag_ec2_iam_role_name = module.autoscaling.ag_ec2_iam_role_name
+    lb_target_group_name = module.loadbalancer.lb_target_group_name
+  }
 }

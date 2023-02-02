@@ -262,12 +262,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
 #     the logs will be placed
 # -----------------------------------
 resource "aws_cloudwatch_log_group" "ecs" {
-  name = format("%s/%s/%s/%s",
-    local.identifier,
-    "ecs",
-    var.suffix,
-    "task"
-  )
+  name              = local.ecs_container_log_group_name
   retention_in_days = var.ecs_logs_retention_in_days
 
   tags = local.tags
@@ -277,13 +272,14 @@ resource "aws_cloudwatch_log_group" "ecs" {
 # 5.3 Get the container definition
 # -----------------------------------
 data "template_file" "ecs_task_container_definition" {
-  template = file("${path.module}/config/task_definition.json.tpl")
+  template = file("${path.module}/config/container_definitions.json.tpl")
 
   vars = {
-    name      = "${local.identifier}-${var.suffix}"
-    region    = data.aws_region.current.name
-    image     = "${aws_ecr_repository.this.repository_url}:${var.ecr_image_version}"
-    log_group = aws_cloudwatch_log_group.ecs.name
+    name          = local.ecs_container_name
+    region        = data.aws_region.current.name
+    image         = "${aws_ecr_repository.this.repository_url}:${var.ecr_image_version}"
+    log_group     = aws_cloudwatch_log_group.ecs.name
+    stream_prefix = local.ecs_container_stream_prefix
   }
 }
 
@@ -295,16 +291,23 @@ resource "aws_ecs_task_definition" "this" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.ecs_task_cpu
   memory                   = var.ecs_task_memory
-  network_mode             = "awsvpc"
+  network_mode             = local.ecs_network_mode
 
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
   }
 
+  # For the first deployment, afterwards, it will be handled by the application repo
   container_definitions = jsonencode(jsondecode(data.template_file.ecs_task_container_definition.rendered))
 
   execution_role_arn = aws_iam_role.ecs_execution.arn
+
+  lifecycle {
+    ignore_changes = [
+      container_definitions
+    ]
+  }
 
   tags = local.tags
 }
@@ -345,10 +348,6 @@ resource "aws_ecs_service" "this" {
   launch_type      = "FARGATE"
   platform_version = var.ecs_service_platform_version
 
-  lifecycle {
-    ignore_changes = [desired_count]
-  }
-
   network_configuration {
     subnets         = var.private_subnets_ids
     security_groups = [aws_security_group.this.id]
@@ -356,8 +355,16 @@ resource "aws_ecs_service" "this" {
 
   load_balancer {
     target_group_arn = var.lb_target_group_arn
-    container_name   = "${local.identifier}-${var.suffix}"
+    container_name   = local.ecs_container_name
     container_port   = 80
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition, load_balancer, platform_version]
   }
 
   tags = local.tags
