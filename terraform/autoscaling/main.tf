@@ -142,7 +142,6 @@ resource "aws_autoscaling_group" "this" {
   vpc_zone_identifier       = var.private_subnets_ids
   min_size                  = var.min_size
   max_size                  = var.max_size
-  desired_capacity          = var.desired_capacity
   health_check_type         = "EC2"
   health_check_grace_period = 120
   wait_for_capacity_timeout = "10m"
@@ -182,7 +181,24 @@ resource "aws_autoscaling_group" "this" {
 }
 
 # ---------------------------------------------------------------
-# 6. Create the notifications for Autoscaling events
+# 6. Create the Autoscaling Policies
+# ---------------------------------------------------------------
+resource "aws_autoscaling_policy" "this" {
+  name                   = "${local.identifier}-${var.suffix}"
+  autoscaling_group_name = aws_autoscaling_group.this.name
+  policy_type            = "SimpleScaling"
+  adjustment_type        = "ChangeInCapacity"
+  scaling_adjustment     = 1
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 60.0
+  }
+}
+
+# ---------------------------------------------------------------
+# 7. Create the notifications for Autoscaling events
 # ---------------------------------------------------------------
 resource "aws_autoscaling_notification" "this" {
   group_names = [aws_autoscaling_group.this.name]

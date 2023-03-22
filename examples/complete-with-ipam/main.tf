@@ -11,6 +11,19 @@ resource "random_id" "this" {
   byte_length = 4
 }
 
+module "sns" {
+  source = "../../terraform/sns"
+
+  identifier  = local.identifier
+  environment = local.environment
+  suffix      = local.suffix
+
+  sns_general_subscriptions = [{
+    endpoint = "my_email@hello.world"
+    protocol = "email"
+  }]
+}
+
 module "network" {
   source = "../../terraform/network-simple"
 
@@ -56,6 +69,7 @@ module "autoscaling" {
   vpc_id              = module.network.vpc_id
   vpc_cidr_block      = module.network.vpc_cidr_block
   db_creds_secret_id  = local.db_creds_secret_id
+  asg_sns_arn         = module.sns.sns_general_arn
 }
 
 module "db" {
@@ -86,4 +100,7 @@ module "codepipeline" {
     ag_ec2_iam_role_name = module.autoscaling.ag_ec2_iam_role_name
     lb_target_group_name = module.loadbalancer.lb_target_group_name
   }
+
+  deploy_trigger_target_arn        = module.sns.sns_general_arn
+  pipeline_notification_target_arn = module.sns.sns_general_arn
 }

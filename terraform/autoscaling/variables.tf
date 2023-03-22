@@ -42,12 +42,6 @@ variable "max_size" {
   default     = 3
 }
 
-variable "desired_capacity" {
-  description = "The desired number of instances that should be running in normal condition in the autoscaling group"
-  type        = number
-  default     = 2
-}
-
 variable "lb_sg_id" {
   description = "The security group's id of the load balancer to allow inbound from it"
   type        = string
