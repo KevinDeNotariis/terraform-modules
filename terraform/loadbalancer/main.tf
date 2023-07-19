@@ -56,7 +56,7 @@ resource "aws_lb" "this" {
 # 3. Define the target Groups
 # ---------------------------------------------------------------
 resource "aws_lb_target_group" "this" {
-  name        = "${local.identifier}-${var.suffix}"
+  name        = substr("${local.identifier}-${var.suffix}", 0, 31)
   vpc_id      = var.vpc_id
   port        = 80
   protocol    = "HTTP"
@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "this" {
 
 resource "aws_lb_target_group" "green" {
   count       = var.enable_green_lb_target_group ? 1 : 0
-  name        = "${local.identifier}-green-${var.suffix}"
+  name        = substr("${local.identifier}-green-${var.suffix}", 0, 31)
   vpc_id      = var.vpc_id
   port        = 80
   protocol    = "HTTP"
