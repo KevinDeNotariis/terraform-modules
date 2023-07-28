@@ -284,7 +284,35 @@ data "template_file" "ecs_task_container_definition" {
 }
 
 # -----------------------------------
-# 5.4 Create the task definition
+# 5.4 Create the task role
+# -----------------------------------
+resource "aws_iam_role" "ecs_task" {
+  name = "${local.identifier}-ecs-task-${var.suffix}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+      Condition = {
+        ArnLike = {
+          "aws:SourceArn" = "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+        }
+        StringEquals = {
+          "arn:SourceAccount" = data.aws_caller_identity.current.account_id
+        }
+      }
+    }]
+  })
+
+  tags = local.tags
+}
+
+# -----------------------------------
+# 5.5 Create the task definition
 # -----------------------------------
 resource "aws_ecs_task_definition" "this" {
   family                   = "${local.identifier}-${var.suffix}"
@@ -302,6 +330,7 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode(jsondecode(data.template_file.ecs_task_container_definition.rendered))
 
   execution_role_arn = aws_iam_role.ecs_execution.arn
+  task_role_arn      = aws_iam_role.ecs_task.arn
 
   lifecycle {
     ignore_changes = [
