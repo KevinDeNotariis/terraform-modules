@@ -148,6 +148,12 @@ variable "deploy_ecs_config" {
   default = null
 }
 
+variable "build_env_variables" {
+  description = "Environment variables for the codebuild container"
+  type        = map(string)
+  default     = {}
+}
+
 variable "deploy_trigger_target_arn" {
   description = "The Arn of the target SNS where to send information regarding the deployment progress"
   type        = string

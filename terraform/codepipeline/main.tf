@@ -434,6 +434,15 @@ resource "aws_codebuild_project" "this" {
         value = environment_variable.value
       }
     }
+
+    dynamic "environment_variable" {
+      for_each = var.build_env_variables
+
+      content {
+        name  = environment_variable.key
+        value = environment_variable.value
+      }
+    }
   }
 
   source {
