@@ -350,9 +350,9 @@ resource "aws_security_group" "this" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow Inbound Port 80 From VPC"
-    from_port   = 80
-    to_port     = 80
+    description = "Allow Inbound Port ${var.ecs_container_port} From VPC"
+    from_port   = var.ecs_container_port
+    to_port     = var.ecs_container_port
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr_block]
   }
@@ -385,7 +385,7 @@ resource "aws_ecs_service" "this" {
   load_balancer {
     target_group_arn = var.lb_target_group_arn
     container_name   = local.ecs_container_name
-    container_port   = 80
+    container_port   = var.ecs_container_port
   }
 
   deployment_controller {

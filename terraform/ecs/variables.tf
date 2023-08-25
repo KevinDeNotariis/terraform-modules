@@ -52,6 +52,12 @@ variable "ecr_image_version" {
   default     = "latest"
 }
 
+variable "ecs_container_port" {
+  description = "The port where the load balancer will be associated with the container"
+  type        = number
+  default     = 80
+}
+
 variable "ecs_capacity_provider_base" {
   description = "The base attribute for the ECS cluster capacity provider 'fargate'"
   type        = number
