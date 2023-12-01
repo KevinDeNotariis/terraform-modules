@@ -179,6 +179,10 @@ data "aws_iam_policy_document" "codepipeline" {
         format("arn:aws:iam::%s:role/%s",
           data.aws_caller_identity.current.account_id,
           var.deploy_ecs_config.execution_role_name
+        ),
+        format("arn:aws:iam::%s:role/%s",
+          data.aws_caller_identity.current.account_id,
+          var.deploy_ecs_config.task_role_name
         )
       ]
     }

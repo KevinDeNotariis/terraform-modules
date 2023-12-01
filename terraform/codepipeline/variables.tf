@@ -107,7 +107,8 @@ variable "deploy_ecs_config" {
     service_name = string
 
     # The task role arn allowing containers to interact with AWS APIs
-    task_role_arn = string
+    task_role_arn  = string
+    task_role_name = string
 
     # The execution role arn and name of the ECS task
     execution_role_arn  = string
