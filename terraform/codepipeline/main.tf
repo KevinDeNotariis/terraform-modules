@@ -431,6 +431,7 @@ resource "aws_codebuild_project" "this" {
         ECR_IMAGE_REPO_URL           = var.deploy_ecs_config.ecr_repo_url
         ECR_IMAGE_TAG                = "latest"
         ECS_EXECUTION_ROLE_ARN       = var.deploy_ecs_config.execution_role_arn
+        ECS_TASK_ROLE_ARN            = var.deploy_ecs_config.task_role_arn
         ECS_FAMILY                   = var.deploy_ecs_config.family
         ECS_CPU                      = var.deploy_ecs_config.cpu
         ECS_MEMORY                   = var.deploy_ecs_config.memory
