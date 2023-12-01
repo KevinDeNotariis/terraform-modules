@@ -1,6 +1,9 @@
 locals {
   identifier = "${var.identifier}-${var.environment}"
-  lb_cname   = "${local.identifier}.${var.root_domain_name}"
+  lb_cname = try(
+    "${var.lb_subdomain}.${var.root_domain_name}",
+    "${local.identifier}.${var.root_domain_name}",
+  )
 
   dev_environments  = ["dev", "test"]
   prod_environments = ["stage", "prod"]

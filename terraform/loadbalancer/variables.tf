@@ -29,8 +29,14 @@ variable "public_subnets_ids" {
 }
 
 variable "root_domain_name" {
-  description = "The root domain name where the Load Balancer CNAME will be created with a naming convention of: {identifier}.{environment}.{root_domain_name}"
+  description = "The root domain name where the Load Balancer CNAME will be created"
   type        = string
+}
+
+variable "lb_subdomain" {
+  description = "The subdomain that will be used to create the CNAME for the load balancer. If empty, the subdomain will default to {identifier}.{environment}"
+  type        = string
+  default     = null
 }
 
 variable "lb_cname_ttl" {
