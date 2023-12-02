@@ -105,6 +105,8 @@ module "codepipeline" {
   deploy_ecs_config = {
     cluster_name               = module.ecs.ecs_cluster_name
     service_name               = module.ecs.ecs_service_name
+    task_role_arn              = module.ecs.ecs_task_role_arn
+    task_role_name             = module.ecs.ecs_task_role_name
     execution_role_arn         = module.ecs.ecs_execution_role_arn
     execution_role_name        = module.ecs.ecs_execution_role_name
     family                     = module.ecs.ecs_family
