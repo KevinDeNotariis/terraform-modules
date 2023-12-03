@@ -172,10 +172,6 @@ resource "aws_iam_role" "ecs_execution" {
     }]
   })
 
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  ]
-
   tags = local.tags
 }
 data "aws_iam_policy_document" "ecs_execution_load_balancing" {
@@ -255,6 +251,10 @@ resource "aws_iam_policy" "ecs_execution" {
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
   role       = aws_iam_role.ecs_execution.name
   policy_arn = aws_iam_policy.ecs_execution.arn
+}
+resource "aws_iam_role_policy_attachment" "managed_ecs_execution" {
+  role       = aws_iam_role.ecs_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # -----------------------------------
